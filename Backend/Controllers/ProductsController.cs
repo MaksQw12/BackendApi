@@ -22,12 +22,18 @@ namespace Backend.Controllers
 
         // GET: api/Products
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Product>>> GetProducts()
+        public async Task<ActionResult<IEnumerable<Product>>> GetProducts(string? search)
         {
           if (_context.Products == null)
           {
               return NotFound();
           }
+
+            if(search != null && !string.IsNullOrWhiteSpace(search))
+            {
+                return await _context.Products.Where(p => p.ProductName.Trim().ToLower().Contains(search)).ToListAsync();
+            }
+
             return await _context.Products.ToListAsync();
         }
 
