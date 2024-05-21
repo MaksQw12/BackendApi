@@ -31,6 +31,39 @@ namespace Backend.Controllers
             return await _context.Products.ToListAsync();
         }
 
+        [HttpGet("Pagination")]
+        public async Task<ActionResult<IEnumerable<Product>>> GetProducts(string? search = null, int page = 1, int pageSize = 6)
+        {
+            if (_context.Products == null)
+            {
+                return NotFound();
+            }
+
+            var query = _context.Products.AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                query = query.Where(p => p.ProductName.Contains(search));
+            }
+
+            var totalProducts = await query.CountAsync();
+            var products = await query
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            var pagination = new
+            {
+                Page = page,
+                PageSize = pageSize,
+                TotalCount = totalProducts,
+                TotalPages = (int)Math.Ceiling(totalProducts / (double)pageSize),
+                Data = products
+            };
+
+            return Ok(pagination);
+        }
+
         // GET: api/Products/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Product>> GetProduct(int id)
