@@ -31,7 +31,7 @@ namespace Backend.Controllers
                 return BadRequest("Пользователь не найден");
             verificationCode = GenerateVerificationCode();
             await SendEmail(user.Email, verificationCode);
-            return existingUser.Id;
+            return Ok(existingUser.Id);
         }
 
         [HttpPost("Auth")]
