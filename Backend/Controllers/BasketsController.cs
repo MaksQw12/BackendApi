@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Backend.Models;
+using Microsoft.CodeAnalysis;
 
 namespace Backend.Controllers
 {
@@ -22,13 +23,23 @@ namespace Backend.Controllers
 
         // GET: api/Baskets
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Basket>>> GetBaskets()
+        public async Task<ActionResult<IEnumerable<Basket>>> GetBaskets(int? userId = null, int? productId = null)
         {
-          if (_context.Baskets == null)
-          {
-              return NotFound();
-          }
-            return await _context.Baskets.ToListAsync();
+            if (userId != null && productId != null)
+            {
+   
+                var basketItem = await _context.Baskets.FirstOrDefaultAsync(b => b.IdUser == userId && b.IdProduct == productId);
+                if (basketItem == null)
+                {
+                    return NotFound();
+                }
+                return Ok(basketItem);
+            }
+            else
+            {
+    
+                return await _context.Baskets.ToListAsync();
+            }
         }
 
         // GET: api/Baskets/5
