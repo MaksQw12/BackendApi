@@ -21,6 +21,35 @@ namespace Backend.Controllers
             _context = context;
         }
 
+        [HttpGet("user/{userId}")]
+        public async Task<ActionResult<IEnumerable<Product>>> GetBasketByUserId(int userId)
+        {
+            var basketItems = await _context.Baskets
+                .Where(b => b.IdUser == userId)
+                .Include(b => b.IdProductNavigation)
+                .Select(b => new
+                {
+                    b.Id,
+                    b.Count,
+                    Product = new
+                    {
+                        b.IdProductNavigation.Id,
+                        b.IdProductNavigation.ProductName,
+                        b.IdProductNavigation.Description,
+                        b.IdProductNavigation.Price,
+                        b.IdProductNavigation.Image
+                    }
+                })
+                .ToListAsync();
+
+            if (basketItems == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(basketItems);
+        }
+
         // GET: api/Baskets
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Basket>>> GetBaskets(int? userId = null, int? productId = null)
@@ -41,6 +70,7 @@ namespace Backend.Controllers
                 return await _context.Baskets.ToListAsync();
             }
         }
+
 
         // GET: api/Baskets/5
         [HttpGet("{id}")]

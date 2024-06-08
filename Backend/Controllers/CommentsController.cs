@@ -22,8 +22,13 @@ namespace Backend.Controllers
 
         // GET: api/Comments
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Comment>>> GetComments()
+        public async Task<ActionResult<IEnumerable<Comment>>> GetComments(int? productId = null)
         {
+            if(productId != null)
+            {
+                return await _context.Comments.Where(p => p.IsProduct == productId).ToListAsync();
+            }
+
           if (_context.Comments == null)
           {
               return NotFound();
