@@ -21,6 +21,28 @@ namespace Backend.Controllers
             _context = context;
         }
 
+        [HttpDelete("user/{userId}")]
+        public async Task<IActionResult> DeleteAllItemsForUser(int userId)
+        {
+            try
+            {
+                var basketItems = await _context.Baskets.Where(b => b.IdUser == userId).ToListAsync();
+                if (basketItems == null || !basketItems.Any())
+                {
+                    return NotFound($"There are no items in the basket for user with ID {userId}.");
+                }
+
+                _context.Baskets.RemoveRange(basketItems);
+                await _context.SaveChangesAsync();
+
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, $"An error occurred while deleting basket items for user with ID {userId}: {ex.Message}");
+            }
+        }
+
         [HttpGet("user/{userId}")]
         public async Task<ActionResult<IEnumerable<Product>>> GetBasketByUserId(int userId)
         {
