@@ -13,4 +13,4 @@
     </li>
 </ul>
 
-<h3>Ссылка на Frontend: https://github.com/MaksQw12</h3>
+<h3>Ссылка на Frontend: https://github.com/MaksQw12/DiplomNepochatix</h3>
